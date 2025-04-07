@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+  secret-detector:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+      - MAX_COMMITS=${MAX_COMMITS:-100}
+      - SCAN_DEPTH_DAYS=${SCAN_DEPTH_DAYS:-30}
+      - DEBUG_MODE=${DEBUG_MODE:-false}
+      - SKIP_BINARY=${SKIP_BINARY:-true}
+      - MAX_FILE_SIZE=${MAX_FILE_SIZE:-1048576}
+      - PORT=8080
+    volumes:
+      - ./secret_patterns.yaml:/app/secret_patterns.yaml
+      - ./templates:/app/templates
+    restart: unless-stopped 
