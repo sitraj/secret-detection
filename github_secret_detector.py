@@ -436,7 +436,15 @@ def scan_repository():
             }), 400
 
         repo_name = data['repository']
-        days = int(data.get('days', os.getenv('SCAN_DEPTH_DAYS', 30)))
+        try:
+            days = int(data.get('days', os.getenv('SCAN_DEPTH_DAYS', 30)))
+        except ValueError:
+            return jsonify({
+                "status": "error",
+                "message": "Invalid days parameter",
+                "error": "Days parameter must be a valid integer"
+            }), 400
+            
         scan_commits = data.get('scan_commits', True)
         scan_pulls = data.get('scan_pulls', True)
 
@@ -500,7 +508,15 @@ def generate_report():
             }), 400
 
         repo_name = data['repository']
-        days = int(data.get('days', os.getenv('SCAN_DEPTH_DAYS', 30)))
+        try:
+            days = int(data.get('days', os.getenv('SCAN_DEPTH_DAYS', 30)))
+        except ValueError:
+            return jsonify({
+                "status": "error",
+                "message": "Invalid days parameter",
+                "error": "Days parameter must be a valid integer"
+            }), 400
+            
         scan_commits = data.get('scan_commits', True)
         scan_pulls = data.get('scan_pulls', True)
 
