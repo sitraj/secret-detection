@@ -52,6 +52,31 @@ pip install -r requirements.txt
 export GITHUB_TOKEN=your_github_token
 ```
 
+## Environment Setup
+
+Create a `.env` file in the root directory with the following content:
+```bash
+# GitHub Authentication
+GITHUB_TOKEN=your_personal_access_token
+
+# Optional Configuration
+MAX_COMMITS=100           # Maximum number of commits to scan (default: 100)
+SCAN_DEPTH_DAYS=30       # Number of days to look back in history (default: 30)
+DEBUG_MODE=false         # Enable debug logging (default: false)
+SKIP_BINARY=true        # Skip binary files during scan (default: true)
+MAX_FILE_SIZE=1048576   # Maximum file size to scan in bytes (default: 1MB)
+```
+
+To generate a GitHub token:
+1. Go to GitHub Settings → Developer Settings → Personal Access Tokens
+2. Click "Generate New Token" (Classic)
+3. Select the following scopes:
+   - `repo` (Full control of private repositories)
+   - `read:org` (Read organization data)
+4. Copy the generated token and paste it in your `.env` file
+
+**Note**: Never commit the `.env` file to version control. It's already included in `.gitignore` for your security.
+
 ## Usage
 
 Run the script:
