@@ -10,6 +10,7 @@ A tool to scan GitHub repositories for potential secrets and sensitive informati
 - User-friendly web interface
 - Comprehensive test coverage
 - Docker support for easy deployment
+- Swagger API documentation
 
 ## Installation
 
@@ -75,6 +76,14 @@ A tool to scan GitHub repositories for potential secrets and sensitive informati
 4. Configure the scan options as needed
 
 5. Click either "Get JSON Results" or "Get HTML Report" to start the scan
+
+### API Documentation
+
+The API documentation is available at `http://localhost:8080/api-docs`. This provides an interactive Swagger UI where you can:
+
+- View detailed API documentation
+- Test API endpoints directly from the browser
+- See request and response schemas
 
 ### API Endpoints
 

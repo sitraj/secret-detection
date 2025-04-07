@@ -14,6 +14,9 @@ COPY . .
 # Create templates directory if it doesn't exist
 RUN mkdir -p templates
 
+# Make sure the swagger.yaml file is in the correct location
+RUN cp swagger.yaml /app/swagger.yaml
+
 # Expose the port the app runs on
 EXPOSE 8080
 

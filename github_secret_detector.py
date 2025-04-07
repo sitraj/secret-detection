@@ -10,7 +10,7 @@ from rich.console import Console
 from rich.table import Table
 from rich import print as rprint
 from pattern_loader import PatternLoader
-from flask import Flask, request, jsonify, render_template_string, render_template
+from flask import Flask, request, jsonify, render_template_string, render_template, send_from_directory
 from flask_cors import CORS
 
 # Load environment variables
@@ -553,6 +553,17 @@ def generate_report():
             "message": "An error occurred while generating the report",
             "error": str(e)
         }), 500
+
+# Add routes for Swagger UI
+@app.route('/api-docs')
+def swagger_ui():
+    """Serve the Swagger UI HTML page."""
+    return render_template('swagger.html')
+
+@app.route('/swagger.yaml')
+def swagger_yaml():
+    """Serve the Swagger YAML file."""
+    return send_from_directory('.', 'swagger.yaml')
 
 if __name__ == '__main__':
     # Ensure templates directory exists

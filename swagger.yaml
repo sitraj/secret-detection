@@ -1,0 +1,254 @@
+openapi: 3.0.0
+info:
+  title: GitHub Secret Detector API
+  description: API for scanning GitHub repositories for potential secrets and sensitive information
+  version: 1.0.0
+  contact:
+    name: GitHub Secret Detector Team
+    url: https://github.com/yourusername/github-secret-detector
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+  - url: https://your-production-url.com
+    description: Production server
+tags:
+  - name: Scanning
+    description: Endpoints for scanning repositories
+  - name: Reports
+    description: Endpoints for generating reports
+paths:
+  /scan:
+    post:
+      summary: Scan a GitHub repository for secrets
+      description: Scans a GitHub repository for potential secrets and sensitive information
+      tags:
+        - Scanning
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - repository
+              properties:
+                repository:
+                  type: string
+                  description: GitHub repository in the format 'owner/repo'
+                  example: octocat/Hello-World
+                days:
+                  type: integer
+                  description: Number of days to look back in history
+                  default: 30
+                  minimum: 1
+                  maximum: 365
+                scan_commits:
+                  type: boolean
+                  description: Whether to scan commits
+                  default: true
+                scan_pulls:
+                  type: boolean
+                  description: Whether to scan pull requests
+                  default: true
+      responses:
+        '200':
+          description: Successful scan
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Found 5 potential secrets
+                  secrets:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        file:
+                          type: string
+                          example: path/to/file
+                        type:
+                          type: string
+                          example: API Key
+                        masked_secret:
+                          type: string
+                          example: abcd****wxyz
+                        context:
+                          type: string
+                          example: main
+                        line_number:
+                          type: integer
+                          example: 42
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: error
+                  message:
+                    type: string
+                    example: Missing repository parameter
+                  error:
+                    type: string
+                    example: Please provide a repository in the format 'owner/repo'
+        '404':
+          description: Repository not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: error
+                  message:
+                    type: string
+                    example: Could not access repository: owner/repo
+                  error:
+                    type: string
+                    example: 404 Not Found
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: error
+                  message:
+                    type: string
+                    example: An error occurred while scanning the repository
+                  error:
+                    type: string
+                    example: Internal server error
+  /report:
+    post:
+      summary: Generate an HTML report
+      description: Generates an HTML report of secrets found in a GitHub repository
+      tags:
+        - Reports
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - repository
+              properties:
+                repository:
+                  type: string
+                  description: GitHub repository in the format 'owner/repo'
+                  example: octocat/Hello-World
+                days:
+                  type: integer
+                  description: Number of days to look back in history
+                  default: 30
+                  minimum: 1
+                  maximum: 365
+                scan_commits:
+                  type: boolean
+                  description: Whether to scan commits
+                  default: true
+                scan_pulls:
+                  type: boolean
+                  description: Whether to scan pull requests
+                  default: true
+      responses:
+        '200':
+          description: HTML report
+          content:
+            text/html:
+              schema:
+                type: string
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: error
+                  message:
+                    type: string
+                    example: Missing repository parameter
+                  error:
+                    type: string
+                    example: Please provide a repository in the format 'owner/repo'
+        '404':
+          description: Repository not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: error
+                  message:
+                    type: string
+                    example: Could not access repository: owner/repo
+                  error:
+                    type: string
+                    example: 404 Not Found
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: error
+                  message:
+                    type: string
+                    example: An error occurred while generating the report
+                  error:
+                    type: string
+                    example: Internal server error
+components:
+  schemas:
+    Secret:
+      type: object
+      properties:
+        file:
+          type: string
+          description: Path to the file containing the secret
+        type:
+          type: string
+          description: Type of secret (e.g., API Key, GitHub Token)
+        masked_secret:
+          type: string
+          description: The secret with sensitive parts masked
+        context:
+          type: string
+          description: Context where the secret was found (e.g., branch name, commit SHA)
+        line_number:
+          type: integer
+          description: Line number in the file where the secret was found
+    Error:
+      type: object
+      properties:
+        status:
+          type: string
+          example: error
+        message:
+          type: string
+          description: Human-readable error message
+        error:
+          type: string
+          description: Detailed error information 
