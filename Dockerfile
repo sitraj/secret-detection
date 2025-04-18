@@ -1,21 +1,34 @@
-FROM python:3.9-slim
+# Build stage
+FROM golang:1.21-alpine AS builder
 
 WORKDIR /app
 
-# Copy requirements first to leverage Docker cache
-COPY requirements.txt .
+# Copy go mod and sum files
+COPY go.mod go.sum ./
 
-# Install dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+# Download dependencies
+RUN go mod download
 
-# Copy the rest of the application
+# Copy source code
 COPY . .
 
-# Create templates directory if it doesn't exist
-RUN mkdir -p templates
+# Build the application
+RUN CGO_ENABLED=0 GOOS=linux go build -o detector ./cmd/detector
 
-# Expose the port the app runs on
+# Final stage
+FROM alpine:latest
+
+WORKDIR /app
+
+# Copy the binary from builder
+COPY --from=builder /app/detector .
+
+# Copy templates and swagger files
+COPY templates ./templates
+COPY swagger.yaml .
+
+# Expose port
 EXPOSE 8080
 
-# Command to run the application
-CMD ["python", "github_secret_detector.py"] 
+# Run the application
+CMD ["./detector"] 

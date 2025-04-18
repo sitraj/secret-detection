@@ -1,206 +1,130 @@
 # GitHub Secret Detector
 
-A tool to scan GitHub repositories for potential secrets and sensitive information.
+A high-performance Go application for detecting secrets and sensitive information in GitHub repositories.
 
 ## Features
 
-- Scan repository branches, commits, and pull requests for secrets
-- Detect various types of secrets using pattern matching
-- Generate JSON results or HTML reports
+- Fast and efficient secret detection using Go
+- Scans branches, commits, and pull requests
+- Detects various types of secrets (API keys, tokens, credentials, etc.)
+- Generates JSON results or HTML reports
 - User-friendly web interface
-- Comprehensive test coverage
-- Docker support for easy deployment
 - Swagger API documentation
+- Docker support for easy deployment
 
 ## Installation
 
-### Option 1: Local Installation
+### Prerequisites
+
+- Go 1.21 or later
+- Docker (optional)
+
+### Local Installation
 
 1. Clone the repository:
-   ```
-   git clone https://github.com/yourusername/github-secret-detector.git
-   cd github-secret-detector
+   ```bash
+   git clone https://github.com/sitraj/secret-detection.git
+   cd secret-detection
    ```
 
-2. Install the required dependencies:
-   ```
-   pip install -r requirements.txt
+2. Install dependencies:
+   ```bash
+   go mod download
    ```
 
 3. Set up your GitHub token:
-   ```
+   ```bash
    export GITHUB_TOKEN=your_github_token
    ```
 
-### Option 2: Docker Installation
-
-1. Clone the repository:
-   ```
-   git clone https://github.com/yourusername/github-secret-detector.git
-   cd github-secret-detector
+4. Build and run the application:
+   ```bash
+   go run cmd/detector/main.go
    ```
 
-2. Create a `.env` file with your GitHub token and other configuration:
-   ```
-   GITHUB_TOKEN=your_github_token
-   MAX_COMMITS=100
-   SCAN_DEPTH_DAYS=30
-   DEBUG_MODE=false
-   SKIP_BINARY=true
-   MAX_FILE_SIZE=1048576
+### Docker Installation
+
+1. Build the Docker image:
+   ```bash
+   docker build -t secret-detector .
    ```
 
-3. Build and run the Docker container:
-   ```
-   docker-compose up -d
+2. Run the container:
+   ```bash
+   docker run -p 8080:8080 -e GITHUB_TOKEN=your_github_token secret-detector
    ```
 
 ## Usage
 
 ### Web Interface
 
-1. Start the Flask application:
-   ```
-   python github_secret_detector.py
-   ```
-   
-   Or with Docker:
-   ```
-   docker-compose up -d
-   ```
-
-2. Open a web browser and navigate to `http://localhost:8080`
-
-3. Enter a GitHub repository name in the format `owner/repo` (e.g., `octocat/Hello-World`)
-
-4. Configure the scan options as needed
-
-5. Click either "Get JSON Results" or "Get HTML Report" to start the scan
-
-### API Documentation
-
-The API documentation is available at `http://localhost:8080/api-docs`. This provides an interactive Swagger UI where you can:
-
-- View detailed API documentation
-- Test API endpoints directly from the browser
-- See request and response schemas
+1. Open your browser and navigate to `http://localhost:8080`
+2. Enter a GitHub repository name in the format `owner/repo`
+3. Configure scan options:
+   - Days to look back
+   - Scan commits
+   - Scan pull requests
+4. Click "Get JSON Results" or "Get HTML Report"
 
 ### API Endpoints
 
 #### Scan Repository
-
-```
+```http
 POST /scan
-```
+Content-Type: application/json
 
-Request body:
-```json
 {
-  "repository": "owner/repo",
-  "days": 30,
-  "scan_commits": true,
-  "scan_pulls": true
-}
-```
-
-Response:
-```json
-{
-  "status": "success",
-  "message": "Found X potential secrets",
-  "secrets": [
-    {
-      "file": "path/to/file",
-      "type": "Secret Type",
-      "masked_secret": "masked_secret",
-      "context": "context",
-      "line_number": 42
-    }
-  ]
+    "repository": "owner/repo",
+    "days": 30,
+    "scan_commits": true,
+    "scan_pulls": true
 }
 ```
 
 #### Generate HTML Report
-
-```
+```http
 POST /report
-```
+Content-Type: application/json
 
-Request body:
-```json
 {
-  "repository": "owner/repo",
-  "days": 30,
-  "scan_commits": true,
-  "scan_pulls": true
+    "repository": "owner/repo",
+    "days": 30,
+    "scan_commits": true,
+    "scan_pulls": true
 }
 ```
 
-Response: HTML report
+#### API Documentation
+- Swagger UI: `http://localhost:8080/api-docs`
+- Swagger YAML: `http://localhost:8080/swagger.yaml`
 
-## Running Tests
+## Development
 
-### Basic Test Run
-
-To run the tests without coverage:
-
-```
-python run_tests.py
-```
-
-### With Coverage Report
-
-To run the tests with a coverage report:
+### Project Structure
 
 ```
-python run_tests.py --coverage
+.
+├── cmd/
+│   └── detector/
+│       └── main.go
+├── internal/
+│   ├── api/
+│   │   └── server.go
+│   │   └── detector.go
+│   └── patterns/
+│       └── patterns.go
+├── templates/
+│   ├── index.html
+│   └── swagger.html
+├── Dockerfile
+├── go.mod
+├── go.sum
+└── README.md
 ```
 
-### With HTML Coverage Report
+### Adding New Secret Patterns
 
-To run the tests with an HTML coverage report:
-
-```
-python run_tests.py --coverage --html
-```
-
-The HTML coverage report will be generated in the `htmlcov` directory.
-
-## Docker Commands
-
-### Build the Docker image
-
-```
-docker-compose build
-```
-
-### Start the container
-
-```
-docker-compose up -d
-```
-
-### Stop the container
-
-```
-docker-compose down
-```
-
-### View logs
-
-```
-docker-compose logs -f
-```
-
-## Requirements
-
-- Python 3.6+
-- Flask
-- PyGithub
-- python-dotenv
-- rich
-- coverage (for test coverage)
-- Docker (optional)
+To add new secret patterns, modify the `loadPatterns` function in `internal/patterns/patterns.go`.
 
 ## License
 
